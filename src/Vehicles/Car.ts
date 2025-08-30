@@ -5,7 +5,8 @@ export class Car extends Vehicle{
         throw new Error('Method not implemented.');
     }
     constructor(scene: Scene){
-        const myMesh: Mesh = MeshBuilder.CreateCapsule("CarMesh", {height: 1}, scene);
+        const myMesh: Mesh = MeshBuilder.CreateCapsule("CarMesh", {height: 5, radiusBottom: 2, radiusTop: 2, radius: 3, subdivisions: 10}, scene);
+        myMesh.rotation.x = 90;
         super(myMesh)
     }
 
