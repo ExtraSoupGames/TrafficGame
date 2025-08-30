@@ -16,9 +16,9 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '20.x'
 
-      - name: Build and deploy
+      - name: Install dependencies and build Vite project
         run: |
           npm install
           npm run build
