@@ -1,5 +1,5 @@
 import { Engine, Scene, ArcRotateCamera, HemisphericLight, MeshBuilder, Vector3 } from "@babylonjs/core";
-import {Car} from "./Vehicles/Car"
+import {VehicleManager} from "./Vehicles/VehicleManager"
 const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
 const engine = new Engine(canvas, true);
 
@@ -10,8 +10,9 @@ camera.attachControl(canvas, true);
 
 new HemisphericLight("light", new Vector3(0.5, 1, 0), scene);
 
-const car = new Car(scene)
+const vehManager: VehicleManager = new VehicleManager();
 engine.runRenderLoop(() => {
+  vehManager.Update(1, scene)
   scene.render();
 });
 
