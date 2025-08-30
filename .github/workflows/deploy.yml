@@ -1,9 +1,9 @@
-name: Deploy to GitHub Pages
+name: Deploy Vite Project to GitHub Pages
 
 on:
   push:
     branches:
-      - main 
+      - main
 
 jobs:
   build-and-deploy:
@@ -13,19 +13,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18' # Use a recent LTS version
+          node-version: '18'
 
       - name: Install dependencies
         run: npm install
 
-      - name: Transpile TypeScript
+      - name: Build Vite project
         run: npm run build
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          branch: gh-pages 
+          branch: gh-pages
           folder: dist
