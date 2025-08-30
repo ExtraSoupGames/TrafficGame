@@ -1,5 +1,5 @@
 import { Engine, Scene, ArcRotateCamera, HemisphericLight, MeshBuilder, Vector3 } from "@babylonjs/core";
-
+import {Car} from "./Vehicles/Car"
 const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
 const engine = new Engine(canvas, true);
 
@@ -11,7 +11,7 @@ camera.attachControl(canvas, true);
 new HemisphericLight("light", new Vector3(0, 1, 0), scene);
 
 const box = MeshBuilder.CreateBox("box", { size: 1 }, scene);
-
+const car = new Car(scene)
 engine.runRenderLoop(() => {
   box.rotation.x += 0.01;
   box.rotation.y += 0.01;

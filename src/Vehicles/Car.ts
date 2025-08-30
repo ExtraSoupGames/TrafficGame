@@ -1,11 +1,11 @@
-import { Mesh } from '@babylonjs/core';
+import { Mesh, MeshBuilder, Scene } from '@babylonjs/core';
 import {Vehicle} from './Vehicle'
-class Car extends Vehicle{
+export class Car extends Vehicle{
     move(): void {
         throw new Error('Method not implemented.');
     }
-    constructor(){
-        const myMesh: Mesh = new Mesh("CarMesh");
+    constructor(scene: Scene){
+        const myMesh: Mesh = MeshBuilder.CreateCapsule("CarMesh", {height: 1}, scene);
         super(myMesh)
     }
 
