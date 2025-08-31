@@ -1,6 +1,6 @@
 import { Mesh, MeshBuilder, Scene, Curve3, Vector3, Quaternion, Axis, Scalar } from '@babylonjs/core';
 import { Vehicle } from './Vehicle';
-
+import { TrafficLight } from '../Road/TrafficLight';
 export class Car extends Vehicle {
 
 
@@ -16,8 +16,8 @@ export class Car extends Vehicle {
 
     }
 
-    override Move(deltaTime: number): void {
-        super.Move(deltaTime);
+    override Move(deltaTime: number, lights: TrafficLight[]): void {
+        super.Move(deltaTime, lights);
     }
 
 }

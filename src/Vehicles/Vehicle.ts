@@ -1,4 +1,6 @@
 import {Mesh, Curve3, Vector3, Scalar, Quaternion, Axis} from "@babylonjs/core"
+import {TrafficLight} from '../Road/TrafficLight'
+
 export abstract class Vehicle{
 
     private points: Vector3[];
@@ -32,15 +34,16 @@ export abstract class Vehicle{
         this.mesh.position.copyFrom(this.points[0]);
     }
 
-    Move(deltaTime: number): void{
-        if(this.ShouldGo()){
+    Move(deltaTime: number, lights: TrafficLight[]): void{
+
+        if(this.ShouldGo(lights)){
             this.velocity += this.acceleration * deltaTime;
         }
         else{
             this.velocity -= this.deaccelaration * deltaTime;
         }
         this.velocity = Math.max(0, this.velocity);
-        this.velocity = Math.min(this.maxSpeed, this.maxSpeed)
+        this.velocity = Math.min(this.maxSpeed, this.velocity)
 
         this.distance = Math.min(this.distance + this.velocity * deltaTime, this.totalLen);
 
@@ -50,6 +53,7 @@ export abstract class Vehicle{
         const posAhead = this.pointAtDistance(Math.min(this.distance + 0.5, this.totalLen));
         const forward = posAhead.subtract(pos).normalize();
         this.mesh.rotationQuaternion = Quaternion.FromLookDirectionLH(Axis.Y.scale(-1), forward);
+
     }
 
     private pointAtDistance(s: number): Vector3 {
@@ -77,7 +81,15 @@ export abstract class Vehicle{
         this.mesh.dispose();
     }
     
-    ShouldGo(): boolean{
-        return true;//TODO implement traffic light logic
+    ShouldGo(lights: TrafficLight[]): boolean{
+        for (const light of lights) {
+            const zone = light.GetZone();
+            if (this.mesh.intersectsMesh(zone, false)) {
+                if (light.isRed) {
+                    return false;
+                }
+            }
+        }  
+        return true;  
     }
 }
