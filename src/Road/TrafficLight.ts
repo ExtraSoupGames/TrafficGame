@@ -31,16 +31,16 @@ export class TrafficLight{
 
     private createStopZone(scene: Scene, position: Vector3, direction: Vector3): Mesh {
         const zone = MeshBuilder.CreateBox("stopZone", {
-            width: 5,
+            width: 3,
             height: 1,
-            depth: 5,
+            depth: 3,
         }, scene);
 
-        zone.isVisible = true; //change to true for debugging
+        zone.isVisible = false; //change to true for debugging
         zone.checkCollisions = false;
-        zone.position = position.add(direction.scale(1));
+        zone.position = position.add(direction);
 
-        return zone;
+        return zone; //TODO change stopzone logic to not depend on vehicle mesh size
     }
     OnClick(): void{
         this.isRed = !this.isRed;

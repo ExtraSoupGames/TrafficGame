@@ -37,7 +37,7 @@ export class GameScene{
         this.vehicles.push(new Car(this.scene, this.paths[pathChoice].curve))
     }
     private SpawnNewTrafficLight(position: Vector3): void{
-        const trafficLight = new TrafficLight(this.scene, position, position.normalize().scale(3));
+        const trafficLight = new TrafficLight(this.scene, position, position.normalize().scale(4.2));
         this.lights.push(trafficLight);
     }
 
