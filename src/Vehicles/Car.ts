@@ -10,7 +10,9 @@ export class Car extends Vehicle {
             { height: 5, radiusBottom: 2, radiusTop: 2, radius: 3, subdivisions: 10 },
             scene
         );
+        myMesh.checkCollisions = false;
         super(myMesh, path, 30, 40, 10);
+
 
     }
 

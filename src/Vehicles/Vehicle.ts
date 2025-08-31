@@ -49,7 +49,7 @@ export abstract class Vehicle{
 
         const posAhead = this.pointAtDistance(Math.min(this.distance + 0.5, this.totalLen));
         const forward = posAhead.subtract(pos).normalize();
-        this.mesh.rotationQuaternion = Quaternion.FromLookDirectionLH(forward, Axis.Y);
+        this.mesh.rotationQuaternion = Quaternion.FromLookDirectionLH(Axis.Y.scale(-1), forward);
     }
 
     private pointAtDistance(s: number): Vector3 {

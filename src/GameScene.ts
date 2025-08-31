@@ -10,9 +10,21 @@ export class GameScene{
     private scene: Scene;
     constructor(scene: Scene){
         this.scene = scene;
-        this.paths.push(new RoadPath([new Vector3(-10, 0, 0), new Vector3(10, 0 ,0)]));
-        this.paths.push(new RoadPath([new Vector3(10, 0, 5), new Vector3(-10, 0 ,5)]));
-        this.paths.push(new RoadPath([new Vector3(10, 0, 5), new Vector3(0, 0, 5), new Vector3(0, 0, 15)]));
+        //straight paths
+        this.paths.push(new RoadPath([new Vector3(-20, 0, 2), new Vector3(20, 0 ,2)]));
+        this.paths.push(new RoadPath([new Vector3(20, 0, -2), new Vector3(-20, 0 ,-2)]));
+        this.paths.push(new RoadPath([new Vector3(2, 0, 20), new Vector3(2, 0 ,-20)]));
+        this.paths.push(new RoadPath([new Vector3(-2, 0, -20), new Vector3(-2, 0 ,20)]));
+        //curved paths
+        this.paths.push(new RoadPath([new Vector3(-20, 0, 2), new Vector3(2, 0, 2), new Vector3(2, 0, -20)]))
+        this.paths.push(new RoadPath([new Vector3(-20, 0, 2), new Vector3(-2, 0, 2), new Vector3(-2, 0, 20)]))
+        this.paths.push(new RoadPath([new Vector3(20, 0, -2), new Vector3(2, 0, -2), new Vector3(2, 0, -20)]))
+        this.paths.push(new RoadPath([new Vector3(20, 0, -2), new Vector3(-2, 0, -2), new Vector3(-2, 0, 20)]))
+        this.paths.push(new RoadPath([new Vector3(2, 0, 20), new Vector3(2, 0, -2), new Vector3(-20, 0, -2)]))
+        this.paths.push(new RoadPath([new Vector3(2, 0, 20), new Vector3(2, 0, 2), new Vector3(20, 0, 2)]))
+        this.paths.push(new RoadPath([new Vector3(-2, 0, -20), new Vector3(-2, 0, 2), new Vector3(-20, 0, -2)]))
+        this.paths.push(new RoadPath([new Vector3(-2, 0, -20), new Vector3(-2, 0, -2), new Vector3(20, 0, 2)]))
+
     }
 
     private SpawnNewVehicle(): void{
@@ -22,9 +34,9 @@ export class GameScene{
 
     public Update(time: number): void{
         this.vehicleSpawnTimer += time;
-        if(this.vehicleSpawnTimer > 1){
+        if(this.vehicleSpawnTimer > 0.1){
             this.SpawnNewVehicle()
-            this.vehicleSpawnTimer -= 1;
+            this.vehicleSpawnTimer -= 0.1;
         }
 
         this.vehicles.forEach(element => {
