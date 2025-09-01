@@ -1,6 +1,6 @@
 import {Mesh, Curve3, Vector3, Scalar, Quaternion, Axis, MeshBuilder, Scene} from "@babylonjs/core"
 import {TrafficLight} from '../Road/TrafficLight'
-import {GameScene} from "../GameScene"
+import {TrafficLane} from "../Road/TrafficLane"
 
 export abstract class Vehicle{
 
@@ -40,9 +40,9 @@ export abstract class Vehicle{
         this.mesh.position.copyFrom(this.points[0]);
     }
 
-    Move(deltaTime: number, lights: TrafficLight[], gameScene: GameScene): void{
+    Move(deltaTime: number, light: TrafficLight, lane: TrafficLane): void{
 
-        if(this.ShouldGo(lights, gameScene)){
+        if(this.ShouldGo(light, lane)){
             this.velocity += this.acceleration * deltaTime;
         }
         else{
@@ -87,16 +87,14 @@ export abstract class Vehicle{
         this.mesh.dispose();
     }
     
-    ShouldGo(lights: TrafficLight[], gameScene: GameScene): boolean{
-        for (const light of lights) {
-            const zone = light.GetZone();
-            if (this.mesh.intersectsMesh(zone, false)) {
-                if (light.isRed) {
-                    return false;
-                }
+    ShouldGo(light: TrafficLight, lane: TrafficLane): boolean{
+        const zone = light.GetZone();
+        if (this.mesh.intersectsMesh(zone, false)) {
+            if (light.isRed) {
+                return false;
             }
-        }  
-        if(gameScene.VehicleInStopZone(this.mesh)){
+        }
+        if(lane.VehicleInStopZone(this.mesh)){
             return false;
         }
         return true;  

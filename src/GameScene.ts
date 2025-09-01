@@ -2,61 +2,37 @@ import {RoadPath} from './Road/RoadPath'
 import {Mesh, Vector3} from "@babylonjs/core"
 import {Vehicle} from './Vehicles/Vehicle'
 import {Car} from './Vehicles/Car'
-import { TrafficLight } from './Road/TrafficLight'
+import { TrafficLane } from './Road/TrafficLane'
 import {Scene} from "@babylonjs/core"
 export class GameScene{
-    paths: RoadPath[] = []
+    private lanes: TrafficLane[] = [];
     private vehicles: Vehicle[] = []
-    private lights: TrafficLight[] = []
     private vehicleSpawnTimer: number = 0
     private scene: Scene;
     constructor(scene: Scene){
         this.scene = scene;
+        this.lanes.push(new TrafficLane(new Vector3(0, 0, 6), scene));
+        this.lanes.push(new TrafficLane(new Vector3(0, 0, -6), scene));
+        this.lanes.push(new TrafficLane(new Vector3(6, 0, 0), scene));
+        this.lanes.push(new TrafficLane(new Vector3(-6, 0, 0), scene));
         //straight paths
-        this.paths.push(new RoadPath([new Vector3(-20, 0, 2), new Vector3(20, 0 ,2)]));
-        this.paths.push(new RoadPath([new Vector3(20, 0, -2), new Vector3(-20, 0 ,-2)]));
-        this.paths.push(new RoadPath([new Vector3(2, 0, 20), new Vector3(2, 0 ,-20)]));
-        this.paths.push(new RoadPath([new Vector3(-2, 0, -20), new Vector3(-2, 0 ,20)]));
-        //curved paths
-        //this.paths.push(new RoadPath([new Vector3(-20, 0, 2), new Vector3(2, 0, 2), new Vector3(2, 0, -20)]))
-        //this.paths.push(new RoadPath([new Vector3(-20, 0, 2), new Vector3(-2, 0, 2), new Vector3(-2, 0, 20)]))
-        //this.paths.push(new RoadPath([new Vector3(20, 0, -2), new Vector3(2, 0, -2), new Vector3(2, 0, -20)]))
-        //this.paths.push(new RoadPath([new Vector3(20, 0, -2), new Vector3(-2, 0, -2), new Vector3(-2, 0, 20)]))
-        this.paths.push(new RoadPath([new Vector3(2, 0, 20), new Vector3(2, 0, -2), new Vector3(-20, 0, -2)]))
-        this.paths.push(new RoadPath([new Vector3(2, 0, 20), new Vector3(2, 0, 2), new Vector3(20, 0, 2)]))
-        this.paths.push(new RoadPath([new Vector3(-2, 0, -20), new Vector3(-2, 0, 2), new Vector3(-20, 0, -2)]))
-        this.paths.push(new RoadPath([new Vector3(-2, 0, -20), new Vector3(-2, 0, -2), new Vector3(20, 0, 2)]))
-        this.SpawnNewTrafficLight(new Vector3(0, 0, 6));
-        this.SpawnNewTrafficLight(new Vector3(0, 0, -6));
-        this.SpawnNewTrafficLight(new Vector3(6, 0, 0));
-        this.SpawnNewTrafficLight(new Vector3(-6, 0, 0));
-    }
-
-    private SpawnNewVehicle(): void{
-        let pathChoice = Math.floor(Math.random() * this.paths.length);
-        this.vehicles.push(new Car(this.scene, this.paths[pathChoice].curve))
-    }
-    private SpawnNewTrafficLight(position: Vector3): void{
-        const trafficLight = new TrafficLight(this.scene, position, position.normalize().scale(4.2));
-        this.lights.push(trafficLight);
+        this.lanes[3].AssignNewPath([new Vector3(-20, 0, 2), new Vector3(20, 0 ,2)]);
+        this.lanes[2].AssignNewPath([new Vector3(20, 0, -2), new Vector3(-20, 0 ,-2)]);
+        this.lanes[1].AssignNewPath([new Vector3(-2, 0, -20), new Vector3(-2, 0 ,20)]);
+        this.lanes[0].AssignNewPath([new Vector3(2, 0, 20), new Vector3(2, 0 ,-20)]);
+        //curved paths TODO assign to correct lanes
+        this.lanes[0].AssignNewPath([new Vector3(2, 0, 20), new Vector3(2, 0, -2), new Vector3(-20, 0, -2)]);
+        this.lanes[0].AssignNewPath([new Vector3(2, 0, 20), new Vector3(2, 0, 2), new Vector3(20, 0, 2)]);
+        this.lanes[1].AssignNewPath([new Vector3(-2, 0, -20), new Vector3(-2, 0, 2), new Vector3(-20, 0, -2)]);
+        this.lanes[1].AssignNewPath([new Vector3(-2, 0, -20), new Vector3(-2, 0, -2), new Vector3(20, 0, 2)]);
     }
 
     public Update(time: number): void{
         this.vehicleSpawnTimer += time;
         if(this.vehicleSpawnTimer > 5){
-            this.SpawnNewVehicle()
+            this.lanes.forEach(element => {element.SpawnNewVehicle()});
             this.vehicleSpawnTimer -= 3;
         }
-
-        this.vehicles.forEach(element => {
-            element.Move(time, this.lights, this)
-            if(element.IsDone()){
-                element.DisposeOfMesh();
-            }
-        });
-        this.vehicles = this.vehicles.filter((vehicle) => vehicle.IsDone() == false);
-    }
-    public VehicleInStopZone(vehicleMesh: Mesh): boolean{
-        return this.vehicles.some(element => element.Intersects(vehicleMesh));
+        this.lanes.forEach(element => {element.Update(time)});
     }
 }
