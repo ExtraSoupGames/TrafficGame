@@ -1,6 +1,7 @@
 import { Mesh, MeshBuilder, Scene, Curve3, Vector3, Quaternion, Axis, Scalar } from '@babylonjs/core';
 import { Vehicle } from './Vehicle';
 import { TrafficLight } from '../Road/TrafficLight';
+import {GameScene} from "../GameScene"
 export class Car extends Vehicle {
 
 
@@ -11,13 +12,13 @@ export class Car extends Vehicle {
             scene
         );
         myMesh.checkCollisions = false;
-        super(myMesh, path, 30, 40, 10);
+        super(myMesh, path, 30, 40, 10, scene);
 
 
     }
 
-    override Move(deltaTime: number, lights: TrafficLight[]): void {
-        super.Move(deltaTime, lights);
+    override Move(deltaTime: number, lights: TrafficLight[], gameScene: GameScene): void {
+        super.Move(deltaTime, lights, gameScene);
     }
 
 }

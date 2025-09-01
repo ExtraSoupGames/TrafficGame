@@ -1,5 +1,5 @@
 import {RoadPath} from './Road/RoadPath'
-import {RandomNumberBlock, Vector3} from "@babylonjs/core"
+import {Mesh, Vector3} from "@babylonjs/core"
 import {Vehicle} from './Vehicles/Vehicle'
 import {Car} from './Vehicles/Car'
 import { TrafficLight } from './Road/TrafficLight'
@@ -18,10 +18,10 @@ export class GameScene{
         this.paths.push(new RoadPath([new Vector3(2, 0, 20), new Vector3(2, 0 ,-20)]));
         this.paths.push(new RoadPath([new Vector3(-2, 0, -20), new Vector3(-2, 0 ,20)]));
         //curved paths
-        this.paths.push(new RoadPath([new Vector3(-20, 0, 2), new Vector3(2, 0, 2), new Vector3(2, 0, -20)]))
-        this.paths.push(new RoadPath([new Vector3(-20, 0, 2), new Vector3(-2, 0, 2), new Vector3(-2, 0, 20)]))
-        this.paths.push(new RoadPath([new Vector3(20, 0, -2), new Vector3(2, 0, -2), new Vector3(2, 0, -20)]))
-        this.paths.push(new RoadPath([new Vector3(20, 0, -2), new Vector3(-2, 0, -2), new Vector3(-2, 0, 20)]))
+        //this.paths.push(new RoadPath([new Vector3(-20, 0, 2), new Vector3(2, 0, 2), new Vector3(2, 0, -20)]))
+        //this.paths.push(new RoadPath([new Vector3(-20, 0, 2), new Vector3(-2, 0, 2), new Vector3(-2, 0, 20)]))
+        //this.paths.push(new RoadPath([new Vector3(20, 0, -2), new Vector3(2, 0, -2), new Vector3(2, 0, -20)]))
+        //this.paths.push(new RoadPath([new Vector3(20, 0, -2), new Vector3(-2, 0, -2), new Vector3(-2, 0, 20)]))
         this.paths.push(new RoadPath([new Vector3(2, 0, 20), new Vector3(2, 0, -2), new Vector3(-20, 0, -2)]))
         this.paths.push(new RoadPath([new Vector3(2, 0, 20), new Vector3(2, 0, 2), new Vector3(20, 0, 2)]))
         this.paths.push(new RoadPath([new Vector3(-2, 0, -20), new Vector3(-2, 0, 2), new Vector3(-20, 0, -2)]))
@@ -45,15 +45,18 @@ export class GameScene{
         this.vehicleSpawnTimer += time;
         if(this.vehicleSpawnTimer > 5){
             this.SpawnNewVehicle()
-            this.vehicleSpawnTimer -= 5;
+            this.vehicleSpawnTimer -= 3;
         }
 
         this.vehicles.forEach(element => {
-            element.Move(time, this.lights)
+            element.Move(time, this.lights, this)
             if(element.IsDone()){
                 element.DisposeOfMesh();
             }
         });
         this.vehicles = this.vehicles.filter((vehicle) => vehicle.IsDone() == false);
+    }
+    public VehicleInStopZone(vehicleMesh: Mesh): boolean{
+        return this.vehicles.some(element => element.Intersects(vehicleMesh));
     }
 }

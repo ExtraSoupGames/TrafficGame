@@ -1,5 +1,6 @@
-import {Mesh, Curve3, Vector3, Scalar, Quaternion, Axis} from "@babylonjs/core"
+import {Mesh, Curve3, Vector3, Scalar, Quaternion, Axis, MeshBuilder, Scene} from "@babylonjs/core"
 import {TrafficLight} from '../Road/TrafficLight'
+import {GameScene} from "../GameScene"
 
 export abstract class Vehicle{
 
@@ -15,9 +16,14 @@ export abstract class Vehicle{
     private maxSpeed: number;
 
     protected mesh: Mesh;
+    protected stopZone: Mesh;
 
-    constructor(vehicleMesh: Mesh, path: Curve3, acceleration: number, deacceleration: number, maxSpeed: number){
+    constructor(vehicleMesh: Mesh, path: Curve3, acceleration: number, deacceleration: number, maxSpeed: number, scene: Scene){
         this.mesh = vehicleMesh;
+        this.stopZone = MeshBuilder.CreateBox("StopZone", {size: 0.1}, scene);
+        this.stopZone.setParent(this.mesh);
+        this.stopZone.isVisible = true;
+        this.stopZone.position = new Vector3(0, -3.5, 0);
         this.acceleration = acceleration;
         this.deaccelaration = deacceleration;
         this.maxSpeed = maxSpeed;
@@ -34,9 +40,9 @@ export abstract class Vehicle{
         this.mesh.position.copyFrom(this.points[0]);
     }
 
-    Move(deltaTime: number, lights: TrafficLight[]): void{
+    Move(deltaTime: number, lights: TrafficLight[], gameScene: GameScene): void{
 
-        if(this.ShouldGo(lights)){
+        if(this.ShouldGo(lights, gameScene)){
             this.velocity += this.acceleration * deltaTime;
         }
         else{
@@ -81,7 +87,7 @@ export abstract class Vehicle{
         this.mesh.dispose();
     }
     
-    ShouldGo(lights: TrafficLight[]): boolean{
+    ShouldGo(lights: TrafficLight[], gameScene: GameScene): boolean{
         for (const light of lights) {
             const zone = light.GetZone();
             if (this.mesh.intersectsMesh(zone, false)) {
@@ -90,6 +96,13 @@ export abstract class Vehicle{
                 }
             }
         }  
+        if(gameScene.VehicleInStopZone(this.mesh)){
+            return false;
+        }
         return true;  
+    }
+
+    Intersects(otherMesh: Mesh): boolean{
+        return otherMesh.intersectsMesh(this.stopZone, true);
     }
 }
