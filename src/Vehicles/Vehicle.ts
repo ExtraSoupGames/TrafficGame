@@ -1,4 +1,4 @@
-import {Mesh, Curve3, Vector3, Scalar, Quaternion, Axis, MeshBuilder, Scene} from "@babylonjs/core"
+import {AbstractMesh, Mesh, Curve3, Vector3, Scalar, Quaternion, Axis, MeshBuilder, Scene} from "@babylonjs/core"
 import {TrafficLight} from '../Road/TrafficLight'
 import {TrafficLane} from "../Road/TrafficLane"
 
@@ -15,15 +15,15 @@ export abstract class Vehicle{
     private deaccelaration: number;
     private maxSpeed: number;
 
-    protected mesh: Mesh;
+    protected mesh: AbstractMesh;
     protected stopZone: Mesh;
 
-    constructor(vehicleMesh: Mesh, path: Curve3, acceleration: number, deacceleration: number, maxSpeed: number, scene: Scene){
+    constructor(vehicleMesh: AbstractMesh, path: Curve3, acceleration: number, deacceleration: number, maxSpeed: number, scene: Scene){
         this.mesh = vehicleMesh;
-        this.stopZone = MeshBuilder.CreateBox("StopZone", {size: 0.1}, scene);
+        this.stopZone = MeshBuilder.CreateBox("StopZone", {size: 3}, scene);
         this.stopZone.setParent(this.mesh);
-        this.stopZone.isVisible = true;
-        this.stopZone.position = new Vector3(0, -3.5, 0);
+        this.stopZone.isVisible = false;
+        this.stopZone.position = new Vector3(0, 0, -5);
         this.acceleration = acceleration;
         this.deaccelaration = deacceleration;
         this.maxSpeed = maxSpeed;
@@ -58,7 +58,7 @@ export abstract class Vehicle{
 
         const posAhead = this.pointAtDistance(Math.min(this.distance + 0.5, this.totalLen));
         const forward = posAhead.subtract(pos).normalize();
-        this.mesh.rotationQuaternion = Quaternion.FromLookDirectionLH(Axis.Y.scale(-1), forward);
+        this.mesh.rotationQuaternion = Quaternion.FromLookDirectionLH(forward.scale(-1), Axis.Y);
 
     }
 
@@ -100,7 +100,7 @@ export abstract class Vehicle{
         return true;  
     }
 
-    Intersects(otherMesh: Mesh): boolean{
+    Intersects(otherMesh: AbstractMesh): boolean{
         return otherMesh.intersectsMesh(this.stopZone, true);
     }
 }

@@ -2,7 +2,7 @@ import {RoadPath} from "./RoadPath"
 import {TrafficLight} from "./TrafficLight"
 import {Vehicle} from "../Vehicles/Vehicle"
 import {Car} from "../Vehicles/Car"
-import {Vector3, Scene, Mesh} from "@babylonjs/core"
+import {Vector3, Scene, AbstractMesh} from "@babylonjs/core"
 export class TrafficLane{
     private paths: RoadPath[] = [];
     private light: TrafficLight;
@@ -15,9 +15,10 @@ export class TrafficLane{
     public AssignNewPath(points: Vector3[]): void{
         this.paths.push(new RoadPath(points))
     }
-    public SpawnNewVehicle(): void{
+    public async SpawnNewVehicle(): Promise<void>{
         let pathChoice = Math.floor(Math.random() * this.paths.length);
-        this.vehicles.push(new Car(this.scene, this.paths[pathChoice].curve))
+        const newCar = await Car.Create(this.scene, this.paths[pathChoice].curve);
+        this.vehicles.push(newCar);
     }
     private SpawnNewTrafficLight(position: Vector3): TrafficLight{
         const trafficLight = new TrafficLight(this.scene, position, position.normalize().scale(4.2));
@@ -32,7 +33,7 @@ export class TrafficLane{
         });
         this.vehicles = this.vehicles.filter((vehicle) => vehicle.IsDone() == false);
     }
-    public VehicleInStopZone(vehicleMesh: Mesh): boolean{
+    public VehicleInStopZone(vehicleMesh: AbstractMesh): boolean{
         return this.vehicles.some(element => element.Intersects(vehicleMesh));
     }
 }

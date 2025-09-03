@@ -31,9 +31,9 @@ export class TrafficLight{
 
     private createStopZone(scene: Scene, position: Vector3, direction: Vector3): Mesh {
         const zone = MeshBuilder.CreateBox("stopZone", {
-            width: 3,
-            height: 1,
-            depth: 3,
+            width: 5,
+            height: 5,
+            depth: 5,
         }, scene);
 
         zone.isVisible = false; //change to true for debugging
