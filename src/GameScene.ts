@@ -20,11 +20,11 @@ export class GameScene{
         this.lanes[2].AssignNewPath([new Vector3(20, 0, -2), new Vector3(-20, 0 ,-2)]);
         this.lanes[1].AssignNewPath([new Vector3(-2, 0, -20), new Vector3(-2, 0 ,20)]);
         this.lanes[0].AssignNewPath([new Vector3(2, 0, 20), new Vector3(2, 0 ,-20)]);
-        //curved paths TODO assign to correct lanes
+        //curved paths
         this.lanes[0].AssignNewPath([new Vector3(2, 0, 20), new Vector3(2, 0, -2), new Vector3(-20, 0, -2)]);
         this.lanes[0].AssignNewPath([new Vector3(2, 0, 20), new Vector3(2, 0, 2), new Vector3(20, 0, 2)]);
-        this.lanes[1].AssignNewPath([new Vector3(-2, 0, -20), new Vector3(-2, 0, 2), new Vector3(-20, 0, -2)]);
-        this.lanes[1].AssignNewPath([new Vector3(-2, 0, -20), new Vector3(-2, 0, -2), new Vector3(20, 0, 2)]);
+        this.lanes[1].AssignNewPath([new Vector3(-2, 0, -20), new Vector3(-2, 0, -2), new Vector3(-20, 0, -2)]);
+        this.lanes[1].AssignNewPath([new Vector3(-2, 0, -20), new Vector3(-2, 0, 2), new Vector3(20, 0, 2)]);
     }
 
     public Update(time: number): void{
