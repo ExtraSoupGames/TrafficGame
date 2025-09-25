@@ -8,16 +8,17 @@ export class RoadPath{
 
     ConstructCurveFromPoints(points: Vector3[]): Curve3{
         if(points.length === 3){
+            const turnValue = 0.85;
             const [start, turn, end] = points;
 
             // 1. Straight segment from start to turn (shorten slightly to make room for curve)
             const dirToTurn = turn.subtract(start);
-            const curveStart = start.add(dirToTurn.scale(0.8)); // shorten 0.2 units before turn
+            const curveStart = start.add(dirToTurn.scale(turnValue)); // shorten 0.2 units before turn
             const firstSegment = Curve3.CreateCatmullRomSpline([start, curveStart], 20);
 
             // 2. Straight segment from turn to end (shorten slightly to make room for curve)
             const dirFromTurn = end.subtract(turn);
-            const curveEnd = turn.add(dirFromTurn.scale(0.8)); // start curve a bit away from turn
+            const curveEnd = turn.add(dirFromTurn.scale(turnValue)); // start curve a bit away from turn
             const lastSegment = Curve3.CreateCatmullRomSpline([curveEnd, end], 20);
 
             // 3. Small curve at the turn
