@@ -27,8 +27,7 @@ export class RoadModels{
         );
         const mesh = new Mesh("roadJunction", scene);
         result.meshes.forEach(m => m.parent = mesh);
-        mesh.scaling = new Vector3(400, 400, 400)
-        mesh.rotation = new Vector3(-Math.PI / 2, 0 ,0);
+        mesh.scaling = new Vector3(4, 4, 4)
         mesh.position = new Vector3(0, -0.2, 0);
         mesh.isVisible = true;
         meshes.push(mesh);
