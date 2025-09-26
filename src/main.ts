@@ -17,6 +17,6 @@ const game: GameScene = new GameScene(scene)
 engine.runRenderLoop(() => {
   const deltaTime = engine.getDeltaTime() / 1000;
   game.Update(deltaTime)
-  scene.render();
+  game.GetScene().render();
 });
 

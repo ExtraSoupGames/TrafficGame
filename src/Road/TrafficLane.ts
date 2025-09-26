@@ -39,4 +39,8 @@ export class TrafficLane{
     public GetAllVehicles(): Vehicle[]{
         return this.vehicles;
     }
+    public Reset(newScene: Scene): void{
+        this.scene = newScene;
+        this.vehicles = [];
+    }
 }

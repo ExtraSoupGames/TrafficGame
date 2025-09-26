@@ -44,7 +44,6 @@ export abstract class Vehicle{
 
     Move(deltaTime: number, light: TrafficLight, lane: TrafficLane): void{
         if(this.collided){
-            this.collided = false;
             return;
         }
         if(this.ShouldGo(light, lane)){
@@ -108,9 +107,9 @@ export abstract class Vehicle{
     Intersects(otherMesh: AbstractMesh): boolean{
         return otherMesh.intersectsMesh(this.stopZone, true);
     }
-    public CollisionCheck(vehicles: Vehicle[]){
+    public CollisionCheck(vehicles: Vehicle[]) : boolean{
         if(this.collided){
-            return;
+            return true;
         }
         vehicles.forEach(element=> {
             if(element !== this){
@@ -118,9 +117,10 @@ export abstract class Vehicle{
                 const collisionDistance = 2.0; // roughly car width/length
                 if (distance < collisionDistance) {
                     this.collided = true;
+                    return true;
                 }
-                console.log("collided with " + element.mesh.name);
             }
         });
+        return false;
     }
 }
