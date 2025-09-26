@@ -20,7 +20,7 @@ export class Car extends Vehicle {
             scene
         );  
 
-        const mesh = new Mesh("root", scene);
+        const mesh = new Mesh("car", scene);
         result.meshes.forEach(m => m.parent = mesh);
         mesh.position = new Vector3(0, 0, 0);
         mesh.scaling = new Vector3(1, 1, 1);

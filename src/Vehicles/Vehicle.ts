@@ -15,6 +15,8 @@ export abstract class Vehicle{
     private deaccelaration: number;
     private maxSpeed: number;
 
+    private collided: boolean = false;
+
     protected mesh: AbstractMesh;
     protected stopZone: Mesh;
 
@@ -41,7 +43,10 @@ export abstract class Vehicle{
     }
 
     Move(deltaTime: number, light: TrafficLight, lane: TrafficLane): void{
-
+        if(this.collided){
+            this.collided = false;
+            return;
+        }
         if(this.ShouldGo(light, lane)){
             this.velocity += this.acceleration * deltaTime;
         }
@@ -102,5 +107,20 @@ export abstract class Vehicle{
 
     Intersects(otherMesh: AbstractMesh): boolean{
         return otherMesh.intersectsMesh(this.stopZone, true);
+    }
+    public CollisionCheck(vehicles: Vehicle[]){
+        if(this.collided){
+            return;
+        }
+        vehicles.forEach(element=> {
+            if(element !== this){
+                const distance = this.mesh.position.subtract(element.mesh.position).length();
+                const collisionDistance = 2.0; // roughly car width/length
+                if (distance < collisionDistance) {
+                    this.collided = true;
+                }
+                console.log("collided with " + element.mesh.name);
+            }
+        });
     }
 }

@@ -40,5 +40,10 @@ export class GameScene{
             this.vehicleSpawnTimer -= 3;
         }
         this.lanes.forEach(element => {element.Update(time)});
+        this.CheckForCollisions();
+    }
+    private CheckForCollisions(){
+        let vehicles = this.lanes.map(lane => lane.GetAllVehicles()).flat();
+        vehicles.forEach(element => {element.CollisionCheck(vehicles)});
     }
 }

@@ -36,4 +36,7 @@ export class TrafficLane{
     public VehicleInStopZone(vehicleMesh: AbstractMesh): boolean{
         return this.vehicles.some(element => element.Intersects(vehicleMesh));
     }
+    public GetAllVehicles(): Vehicle[]{
+        return this.vehicles;
+    }
 }
