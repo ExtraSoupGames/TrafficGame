@@ -5,9 +5,11 @@ import {Car} from './Vehicles/Car'
 import { TrafficLane } from './Road/TrafficLane'
 import {RoadModels} from "./Road/RoadModels"
 import {BackgroundScene} from "./BackgroundScene"
-import {Scene, UniversalCamera, DirectionalLight, HemisphericLight, ShadowGenerator} from "@babylonjs/core"
-import {Rectangle, AdvancedDynamicTexture} from "@babylonjs/gui"
+import {Scene, UniversalCamera, DirectionalLight, HemisphericLight, } from "@babylonjs/core"
+import {Rectangle, AdvancedDynamicTexture, TextBlock, Control} from "@babylonjs/gui"
 export class GameScene{
+    private score: number = 0;
+    private scoreText: TextBlock | null = null;
     private introAlpha: number = 1;
     private lanes: TrafficLane[] = [];
     private vehicles: Vehicle[] = []
@@ -41,6 +43,7 @@ export class GameScene{
 
         let r = RoadModels.Create(this.scene);
         this.CreateFadeOverlay();
+        this.CreateScoreCounter();
         let b = BackgroundScene.Create(this.scene);
     }
 
@@ -55,6 +58,10 @@ export class GameScene{
             this.EndGame();
         }
         this.UpdateIntro(time);
+        this.score += time;
+        if(this.scoreText){
+            this.scoreText.text = `Score: ${Math.round(this.score).toString().padStart(2, "0")}`;
+        }
     }
     private UpdateIntro(time: number): void{
         if(this.introAlpha > 0){
@@ -80,6 +87,39 @@ export class GameScene{
         this.fadeOverlay.alpha = 1; // start opaque
         this.gui.addControl(this.fadeOverlay);
     }
+    private CreateScoreCounter(): void {
+        if (!this.gui) {
+            this.gui = AdvancedDynamicTexture.CreateFullscreenUI("UI");
+        }
+
+        const scoreContainer = new Rectangle();
+        scoreContainer.widthInPixels = 300;
+        scoreContainer.heightInPixels = 80;
+        scoreContainer.background = "rgba(0,0,0,0.5)";
+        scoreContainer.cornerRadius = 10;
+        scoreContainer.thickness = 0;
+        scoreContainer.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+        scoreContainer.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        scoreContainer.paddingTopInPixels = 20;
+        scoreContainer.paddingRightInPixels = 20;
+
+        this.scoreText = new TextBlock();
+        this.scoreText.text = `Score: ${Math.round(this.score).toString().padStart(2, "0")}`;
+        this.scoreText.color = "white";
+        this.scoreText.fontSize = 36;
+        this.scoreText.fontFamily = "Consolas, monospace"; // fixes digit width
+        this.scoreText.width = "100%";
+        this.scoreText.height = "100%";
+        this.scoreText.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        this.scoreText.textVerticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+        this.scoreText.resizeToFit = false; // prevent auto-resize
+
+
+        scoreContainer.addControl(this.scoreText);
+        this.gui.addControl(scoreContainer);
+    }
+
+
     private CheckForCollisions(): boolean{
         let vehicles = this.lanes.map(lane => lane.GetAllVehicles()).flat();
         return vehicles.some(v => v.CollisionCheck(vehicles));
@@ -97,6 +137,7 @@ export class GameScene{
     private ResetGame(newScene: Scene): void{
         this.lanes.forEach(lane => lane.Reset(newScene));
         this.introAlpha = 1;
+        this.score = 0;
     }
     public GetScene(): Scene {
         return this.scene;
