@@ -7,7 +7,6 @@ const scene = new Scene(engine);
 
 const camera = new UniversalCamera("main", new Vector3(15, 15, 15), scene);
 camera.setTarget(new Vector3(0,0,0))
-new HemisphericLight("light", new Vector3(0.5, 1, 0), scene);
 
 window.addEventListener("resize", () => {
     engine.resize();

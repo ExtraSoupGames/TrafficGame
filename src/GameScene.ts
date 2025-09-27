@@ -5,7 +5,7 @@ import {Car} from './Vehicles/Car'
 import { TrafficLane } from './Road/TrafficLane'
 import {RoadModels} from "./Road/RoadModels"
 import {BackgroundScene} from "./BackgroundScene"
-import {Scene, UniversalCamera, HemisphericLight} from "@babylonjs/core"
+import {Scene, UniversalCamera, DirectionalLight, HemisphericLight, ShadowGenerator} from "@babylonjs/core"
 import {Rectangle, AdvancedDynamicTexture} from "@babylonjs/gui"
 export class GameScene{
     private introAlpha: number = 1;
@@ -17,6 +17,7 @@ export class GameScene{
     private gui: AdvancedDynamicTexture | null = null;
     constructor(scene: Scene){
         this.scene = scene;
+        this.SetUpLighting(scene);
         this.PopulateScene();
     }
     private PopulateScene(){
@@ -87,8 +88,8 @@ export class GameScene{
         this.scene.dispose(); 
         const newScene = new Scene(this.scene.getEngine());
         const camera = new UniversalCamera("main", new Vector3(15, 15, 15), newScene);
-        camera.setTarget(new Vector3(0,0,0))
-        new HemisphericLight("light", new Vector3(0.5, 1, 0), newScene);
+        camera.setTarget(new Vector3(0,0,0));
+        this.SetUpLighting(newScene);
         this.scene = newScene;
         this.PopulateScene();
         this.ResetGame(newScene);
@@ -100,4 +101,10 @@ export class GameScene{
     public GetScene(): Scene {
         return this.scene;
     }   
+    private SetUpLighting(newScene: Scene): void{
+        let sunLight = new DirectionalLight("sunLight", new Vector3(0.5, -1, 0), newScene);
+        let ambientLight = new HemisphericLight("ambientLight", new Vector3(1, 1, 1), newScene);
+        ambientLight.intensity = 0.3;
+
+    }
 }

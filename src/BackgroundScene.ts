@@ -1,4 +1,4 @@
-import { Scene, Mesh, Vector3 } from '@babylonjs/core';
+import { Scene, Mesh, Vector3, MeshBuilder, StandardMaterial, Color3 } from '@babylonjs/core';
 import { SceneLoader } from "@babylonjs/core/Loading/sceneLoader.js";
 import "@babylonjs/loaders/glTF";
 
@@ -37,7 +37,11 @@ export class BackgroundScene{
         mesh2.isVisible = true;
         meshes.push(mesh2);
 
-
+        const ground = MeshBuilder.CreatePlane("ground", {size: 100, sideOrientation: Mesh.DOUBLESIDE  }, scene);
+        ground.rotation = new Vector3(-Math.PI / 2, 0 ,0);
+        const mat = new StandardMaterial("mat", scene);
+        ground.material = mat;
+        mat.diffuseColor = new Color3(0.3, 0.6, 0.3);
         
         return new BackgroundScene(scene, meshes);
     }

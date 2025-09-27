@@ -1,6 +1,6 @@
 import {Vector3, ActionManager, Mesh, MeshBuilder, Scene, ExecuteCodeAction, StandardMaterial, Color3} from "@babylonjs/core"
 export class TrafficLight{
-    isRed: boolean = false;
+    isRed: boolean = true;
     mesh: Mesh;
     stopZone: Mesh;
     constructor(scene: Scene, position: Vector3, direction: Vector3) {
