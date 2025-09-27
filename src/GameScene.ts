@@ -4,6 +4,7 @@ import {Vehicle} from './Vehicles/Vehicle'
 import {Car} from './Vehicles/Car'
 import { TrafficLane } from './Road/TrafficLane'
 import {RoadModels} from "./Road/RoadModels"
+import {BackgroundScene} from "./BackgroundScene"
 import {Scene, UniversalCamera, HemisphericLight} from "@babylonjs/core"
 import {Rectangle, AdvancedDynamicTexture} from "@babylonjs/gui"
 export class GameScene{
@@ -37,9 +38,9 @@ export class GameScene{
         this.lanes[1].AssignNewPath([new Vector3(-roadOffset, 0, -20), new Vector3(-roadOffset, 0, roadOffset), new Vector3(20, 0, roadOffset)]);
 
 
-        //new roadmodel testing
         let r = RoadModels.Create(this.scene);
         this.CreateFadeOverlay();
+        let b = BackgroundScene.Create(this.scene);
     }
 
     public Update(time: number): void{
