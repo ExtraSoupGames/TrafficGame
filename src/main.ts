@@ -5,8 +5,8 @@ const engine = new Engine(canvas, true);
 
 const scene = new Scene(engine);
 
-const camera = new UniversalCamera("main", new Vector3(15, 15, 15), scene);
-camera.setTarget(new Vector3(0,0,0))
+  const camera = new UniversalCamera("main", new Vector3(13, 13, 13), scene);
+  camera.setTarget(new Vector3(0,-2,0));
 
 window.addEventListener("resize", () => {
     engine.resize();

@@ -5,6 +5,7 @@ import {Car} from './Vehicles/Car'
 import { TrafficLane } from './Road/TrafficLane'
 import {RoadModels} from "./Road/RoadModels"
 import {BackgroundScene} from "./BackgroundScene"
+import {WarningTracker} from "./WarningTracker"
 import {Scene, UniversalCamera, DirectionalLight, HemisphericLight, } from "@babylonjs/core"
 import {Rectangle, AdvancedDynamicTexture, TextBlock, Control} from "@babylonjs/gui"
 export class GameScene{
@@ -16,37 +17,83 @@ export class GameScene{
     private vehicleSpawnTimer: number = 3
     private scene: Scene;
     private fadeOverlay: Rectangle | null = null;
+    private warningOverlay: Rectangle | null = null;
     private gui: AdvancedDynamicTexture | null = null;
+    public warningTracker: WarningTracker;
     constructor(scene: Scene){
+        this.warningTracker = new WarningTracker(this);
         this.scene = scene;
         this.SetUpLighting(scene);
         this.PopulateScene();
     }
     private PopulateScene(){
         this.lanes = [];
-        this.lanes.push(new TrafficLane(new Vector3(0, 0, 6), this.scene));
-        this.lanes.push(new TrafficLane(new Vector3(0, 0, -6), this.scene));
-        this.lanes.push(new TrafficLane(new Vector3(6, 0, 0), this.scene));
-        this.lanes.push(new TrafficLane(new Vector3(-6, 0, 0), this.scene));
+        this.lanes.push(new TrafficLane(new Vector3(0, 0, 6), this.scene, this.warningTracker));
+        this.lanes.push(new TrafficLane(new Vector3(0, 0, -6), this.scene, this.warningTracker));
+        this.lanes.push(new TrafficLane(new Vector3(6, 0, 0), this.scene, this.warningTracker));
+        this.lanes.push(new TrafficLane(new Vector3(-6, 0, 0), this.scene, this.warningTracker));
         let roadOffset = 1.5;
         //straight paths
-        this.lanes[3].AssignNewPath([new Vector3(-20, 0, roadOffset), new Vector3(20, 0 ,roadOffset)]);
-        this.lanes[2].AssignNewPath([new Vector3(20, 0, -roadOffset), new Vector3(-20, 0 ,-roadOffset)]);
-        this.lanes[1].AssignNewPath([new Vector3(-roadOffset, 0, -20), new Vector3(-roadOffset, 0 ,20)]);
-        this.lanes[0].AssignNewPath([new Vector3(roadOffset, 0, 20), new Vector3(roadOffset, 0 ,-20)]);
+        this.CreateStraightPath(3, new Vector3(-40, 0, roadOffset), new Vector3(40, 0 ,roadOffset));
+        this.CreateStraightPath(2, new Vector3(40, 0, -roadOffset), new Vector3(-40, 0 ,-roadOffset));
+        this.CreateStraightPath(1, new Vector3(-roadOffset, 0, -40), new Vector3(-roadOffset, 0 ,40));
+        this.CreateStraightPath(0, new Vector3(roadOffset, 0, 40), new Vector3(roadOffset, 0 ,-40));
         //curved paths
-        this.lanes[0].AssignNewPath([new Vector3(roadOffset, 0, 20), new Vector3(roadOffset, 0, -roadOffset), new Vector3(-20, 0, -roadOffset)]);
-        this.lanes[0].AssignNewPath([new Vector3(roadOffset, 0, 20), new Vector3(roadOffset, 0, roadOffset), new Vector3(20, 0, roadOffset)]);
-        this.lanes[1].AssignNewPath([new Vector3(-roadOffset, 0, -20), new Vector3(-roadOffset, 0, -roadOffset), new Vector3(-20, 0, -roadOffset)]);
-        this.lanes[1].AssignNewPath([new Vector3(-roadOffset, 0, -20), new Vector3(-roadOffset, 0, roadOffset), new Vector3(20, 0, roadOffset)]);
+        this.CreateCurvedPath(
+            0,
+            new Vector3(roadOffset, 0, 40),
+            new Vector3(roadOffset, 0, 20),
+            new Vector3(roadOffset, 0, -roadOffset),
+            new Vector3(-20, 0, -roadOffset),
+            new Vector3(-40, 0, -roadOffset)
+        );
+
+        this.CreateCurvedPath(
+            0,
+            new Vector3(roadOffset, 0, 40),
+            new Vector3(roadOffset, 0, 20),
+            new Vector3(roadOffset, 0, roadOffset),
+            new Vector3(20, 0, roadOffset),
+            new Vector3(40, 0, roadOffset)
+        );
+
+        this.CreateCurvedPath(
+            1,
+            new Vector3(-roadOffset, 0, -40),
+            new Vector3(-roadOffset, 0, -20),
+            new Vector3(-roadOffset, 0, -roadOffset),
+            new Vector3(-20, 0, -roadOffset),
+            new Vector3(-40, 0, -roadOffset)
+        );
+
+        this.CreateCurvedPath(
+            1,
+            new Vector3(-roadOffset, 0, -40),
+            new Vector3(-roadOffset, 0, -20),
+            new Vector3(-roadOffset, 0, roadOffset),
+            new Vector3(20, 0, roadOffset),
+            new Vector3(40, 0, roadOffset)
+        );
 
 
         let r = RoadModels.Create(this.scene);
         this.CreateFadeOverlay();
         this.CreateScoreCounter();
+        this.CreateWarningOverlay();
         let b = BackgroundScene.Create(this.scene);
     }
-
+    private CreateCurvedPath(laneID: number, firstPoint: Vector3, secondPoint: Vector3, curvePoint: Vector3, penultimatePoint: Vector3, lastPoint: Vector3): void{
+        this.lanes[laneID].AssignNewPath([
+            firstPoint, secondPoint,
+            curvePoint,
+            penultimatePoint, lastPoint]);
+    }
+    private CreateStraightPath(laneID: number, firstPoint: Vector3, lastPoint: Vector3): void{
+        let roadOffset = 1.5;
+        this.lanes[laneID].AssignNewPath([
+            firstPoint,
+            lastPoint]);
+    }
     public Update(time: number): void{
         this.vehicleSpawnTimer += time;
         if(this.vehicleSpawnTimer > 3){
@@ -61,6 +108,9 @@ export class GameScene{
         this.score += time;
         if(this.scoreText){
             this.scoreText.text = `Score: ${Math.round(this.score).toString().padStart(2, "0")}`;
+        }
+        if(this.warningOverlay){
+            this.warningOverlay.alpha = this.warningTracker.GetDesiredOpacity();
         }
     }
     private UpdateIntro(time: number): void{
@@ -86,6 +136,19 @@ export class GameScene{
         this.fadeOverlay.background = "black";
         this.fadeOverlay.alpha = 1; // start opaque
         this.gui.addControl(this.fadeOverlay);
+    }
+    private CreateWarningOverlay(): void {
+        if (this.gui) {
+            this.gui.dispose();
+        }
+        this.gui = AdvancedDynamicTexture.CreateFullscreenUI("UI");
+
+        this.warningOverlay = new Rectangle();
+        this.warningOverlay.width = "100%";
+        this.warningOverlay.height = "100%";
+        this.warningOverlay.background = "red";
+        this.warningOverlay.alpha = 0; // start transparent
+        this.gui.addControl(this.warningOverlay);
     }
     private CreateScoreCounter(): void {
         if (!this.gui) {
@@ -127,8 +190,8 @@ export class GameScene{
     private EndGame(): void{
         this.scene.dispose(); 
         const newScene = new Scene(this.scene.getEngine());
-        const camera = new UniversalCamera("main", new Vector3(15, 15, 15), newScene);
-        camera.setTarget(new Vector3(0,0,0));
+        const camera = new UniversalCamera("main", new Vector3(13, 13, 13), newScene);
+        camera.setTarget(new Vector3(0,-2,0));
         this.SetUpLighting(newScene);
         this.scene = newScene;
         this.PopulateScene();
@@ -138,6 +201,7 @@ export class GameScene{
         this.lanes.forEach(lane => lane.Reset(newScene));
         this.introAlpha = 1;
         this.score = 0;
+        this.warningTracker.Reset();
     }
     public GetScene(): Scene {
         return this.scene;
@@ -146,6 +210,5 @@ export class GameScene{
         let sunLight = new DirectionalLight("sunLight", new Vector3(0.5, -1, 0), newScene);
         let ambientLight = new HemisphericLight("ambientLight", new Vector3(1, 1, 1), newScene);
         ambientLight.intensity = 0.3;
-
     }
 }

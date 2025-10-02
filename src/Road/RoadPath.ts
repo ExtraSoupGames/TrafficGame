@@ -30,6 +30,16 @@ export class RoadPath{
 
             return fullCurve;
         }
+        if(points.length === 5){
+            //if there is 5 points we make the centre curve as if it was 3 and extend it by the first and last
+            //this assumes that the first and last are straight in line with their neighbours
+            var middleCurve = this.ConstructCurveFromPoints(points.slice(1, -2))
+            const firstSegment = Curve3.CreateCatmullRomSpline([points[0], points[1]], 20);
+            const lastSegment = Curve3.CreateCatmullRomSpline([points[3], points[4]], 20);
+            let fullCurve = firstSegment.continue(middleCurve);
+            fullCurve = fullCurve.continue(lastSegment);
+            return fullCurve;
+        }
         else{
             let newCurve = Curve3.CreateCatmullRomSpline(points, 500, false);
             return newCurve;
